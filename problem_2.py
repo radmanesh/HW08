@@ -7,6 +7,7 @@
 import copy
 import math
 from random import Random
+import numpy as np
 
 
 #to setup a random number generator, we will specify a "seed" value
@@ -25,12 +26,12 @@ upperBound = 500   #bounds for Schwefel Function search space
 #note: for the more experienced Python programmers, you might want to consider taking a more object-oriented approach to the PSO implementation, i.e.: a particle class with methods to initialize itself, and update its own velocity and position; a swarm class with a method to iterates through all particles to call update functions, etc.
 
 #number of dimensions of problem
-dimensions = 5
+dimensions = 200
 
 #number of particles in swarm
-swarmSize = 100
+swarmSize = 1000
 
-maxIterations = 100  # maximum number of iterations
+maxIterations = 1000  # maximum number of iterations
 
 #Schwefel function to evaluate a real-valued solution x
 # note: the feasible space is an n-dimensional hypercube centered at the origin with side length = 2 * 500
@@ -61,7 +62,7 @@ def getGlobalBest(pBest, pBestVal):
 w = 0.729  # inertia weight
 c1 = 1.5  # cognitive coefficient
 c2 = 1.5  # social coefficient
-velocityMax = 0.1 * (upperBound - lowerBound)  # maximum velocity
+velocityMax = 0.2 * (upperBound - lowerBound)  # maximum velocity
 
 # velocity update function
 def updateVelocities(vel, pos, pBest, gBest, w=w, c1=c1, c2=c2):  # corrected parameter w and added c2
@@ -89,6 +90,18 @@ def updatePositions(pos, vel):  # corrected function name
                         pos[i][j] = upperBound
       return pos
 
+#function to generate a summary of the swarm's current state
+def summarizeSwarm(pos, vel, pBest, pBestVal):
+    vel_array = np.array(vel)
+
+    p_array = np.array(pBest)
+
+
+    mean_vel = np.mean(vel_array, axis=0)
+    std_vel = np.std(vel_array, axis=0)
+
+    return  mean_vel, std_vel
+
 #the swarm will be represented as a list of positions, velocities, values, pbest, and pbest values
 
 pos = [[] for _ in range(swarmSize)]      #position of particles -- will be a list of lists; e.g., for a 2D problem with 3 particles: [[17,4],[-100,2],[87,-1.2]]
@@ -112,10 +125,10 @@ for i in range(swarmSize):
 pBest = pos[:]          # initialize pbest to the starting position
 pBestVal = curValue[:]  # initialize pbest to the starting position
 
-gbest , gBestVal = getGlobalBest(pBest, pBestVal)  # get the global best position and value
+gBest , gBestVal = getGlobalBest(pBest, pBestVal)  # get the global best position and value
 
 print(f"Initial Global Best Value = {gBestVal}")
-print(f"Initial Global Best Position = {gbest}")
+print(f"Initial Global Best Position = {gBest}")
 
 iteration = 0  # iteration counter
 
@@ -132,16 +145,16 @@ while not done:
                     pBest[i] = pos[i][:]  #copy the current position to the pbest position
                     pBestVal[i] = curValue[i]  #copy the current value to the pbest value
                     if curValue[i] < gBestVal:  #update the global best if the current value is better than the historical best:
-                          gbest = pos[i][:]
+                          gBest = pos[i][:]
                           gBestVal = curValue[i]
 
         # update the velocity and position of the particles
-        #gbest, gbestVal = getGlobalBest(pBest, pBestVal)  #get the global best position and value
-        vel = updateVelocities(vel, pos, pBest, gbest)
+        #gBest, gBestVal = getGlobalBest(pBest, pBestVal)  #get the global best position and value
+        vel = updateVelocities(vel, pos, pBest, gBest)
         pos = updatePositions(pos, vel)  #update the positions of the particles
 
-        iteration += 1  #increment the iteration counter
-
+        # summary = summarizeSwarm(pos, vel, pBest)
+        # mean_pos, std_pos, mean_vel, std_vel = summary
         print(f"Iteration {iteration}: Global Best Value = {gBestVal}")
 
         # check stopping criteria
