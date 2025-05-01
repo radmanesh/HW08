@@ -1,0 +1,27 @@
+#create an continuous valued chromosome
+def createChromosome(d):
+    #this code as-is expects chromosomes to be stored as a list, e.g., x = []
+    #write code to generate chromosomes, most likely want this to be randomly generated
+    x = [myPRNG.uniform(lowerBound, upperBound) for _ in range(d)]
+    return x
+
+
+#create initial population by calling the "createChromosome" function many times and adding each to a list of chromosomes (a.k.a., the "population")
+def initializePopulation(): #n is size of population; d is dimensions of chromosome
+
+    population = []
+    populationFitness = []
+
+    for i in range(populationSize):
+        population.append(createChromosome(dimensions))
+        populationFitness.append(evaluate(population[i]))
+
+    tempZip = zip(population, populationFitness)
+    popVals = sorted(tempZip, key=lambda tempZip: tempZip[1])
+
+    #the return object is a reversed sorted list of tuples:
+    #the first element of the tuple is the chromosome; the second element is the fitness value
+    #for example:  popVals[0] is represents the best individual in the population
+    #popVals[0] for a 2D problem might be  ([-70.2, 426.1], 483.3)  -- chromosome is the list [-70.2, 426.1] and the fitness is 483.3
+
+    return popVals

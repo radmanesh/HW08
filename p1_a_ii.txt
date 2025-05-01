@@ -1,0 +1,14 @@
+#function to mutate solutions
+#this is a simple mutation function that adjusts the value of each gene in the chromosome by a small uniform random amount
+def mutate(x, epsilon=0.01):
+
+    #create some mutation logic  -- make sure to incorporate "mutationRate" somewhere and don't do TOO much mutation
+    if myPRNG.random() < mutationRate:
+        for i in range(len(x)):
+            x[i] += x[i] * myPRNG.uniform(-epsilon, epsilon)  #add a small random number to the chromosome
+            if(x[i] < lowerBound):
+                x[i] = lowerBound
+            if(x[i] > upperBound):
+                x[i] = upperBound
+
+    return x

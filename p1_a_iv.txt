@@ -1,0 +1,9 @@
+#insertion step
+def insert(pop,kids):
+
+    # Check the k best solutions from the previous generation and keep them in the new generation if they are better than the new ones
+    for i in range(eliteSolutions):
+        if pop[i][1] < kids[i][1]:
+            kids[i] = pop[i]
+
+    return kids
